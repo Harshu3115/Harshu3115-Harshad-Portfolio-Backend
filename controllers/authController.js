@@ -119,10 +119,20 @@ const loginAdmin = async (req, res) => {
         }
 
         console.log("DB HASH LENGTH:", admin.password?.length);
+
         console.log(
             "DB HASH START:",
             admin.password?.substring(0, 7)
         );
+
+        console.log(
+            "DB HASH SHA256:",
+            crypto
+                .createHash("sha256")
+                .update(admin.password)
+                .digest("hex")
+        );
+
         console.log("PASSWORD LENGTH:", password.length);
 
         const isPasswordValid = await bcrypt.compare(
