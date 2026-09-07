@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const cloudinary = require("../config/cloudinary");
+
 const projectModel = require("../models/projectModel");
 
 // ===============================
@@ -145,9 +147,23 @@ const createProject = async (req, res) => {
         // IMAGE PATH
         // ===============================
 
-        const image = req.file
-            ? `/uploads/projects/${req.file.filename}`
-            : null;
+        let image = null;
+
+        if (req.file) {
+            const result = await cloudinary.uploader.upload(
+                req.file.path,
+                {
+                    folder: "harshad-portfolio/projects"
+                }
+            );
+
+            image = result.secure_url;
+
+            // Delete temporary local file
+            if (fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+            }
+        }
 
 
         // ===============================
@@ -175,8 +191,8 @@ const createProject = async (req, res) => {
 
                 featured:
                     featured === "true" ||
-                    featured === "1" ||
-                    featured === true
+                        featured === "1" ||
+                        featured === true
                         ? 1
                         : 0,
 
@@ -364,8 +380,8 @@ const updateProject = async (req, res) => {
 
             featured:
                 featured === "true" ||
-                featured === "1" ||
-                featured === true
+                    featured === "1" ||
+                    featured === true
                     ? 1
                     : 0,
 
@@ -382,15 +398,19 @@ const updateProject = async (req, res) => {
         // ===============================
 
         if (req.file) {
-
-            data.image =
-                `/uploads/projects/${req.file.filename}`;
-
-
-            // Delete old image
-            deleteProjectImage(
-                existing.image
+            const result = await cloudinary.uploader.upload(
+                req.file.path,
+                {
+                    folder: "harshad-portfolio/projects"
+                }
             );
+
+            data.image = result.secure_url;
+
+            // Delete temporary local file
+            if (fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+            }
         }
 
 
