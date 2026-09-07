@@ -135,6 +135,7 @@ const loginAdmin = async (req, res) => {
                 admin.password
             );
 
+        console.log("PASSWORD LENGTH:", password.length);
         console.log("PASSWORD VALID:", isPasswordValid);
 
         if (!isPasswordValid) {
@@ -142,7 +143,7 @@ const loginAdmin = async (req, res) => {
                 success: false,
                 message: "Invalid email or password"
             });
-        }
+        } q
 
 
         const token =
