@@ -42,10 +42,10 @@ const app = express();
 // ===============================
 
 app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-  })
+    cors({
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+    })
 );
 
 app.use(express.json());
@@ -199,6 +199,33 @@ app.get("/api/test-db", async (req, res) => {
 
     }
 
+});
+
+// ===============================
+// DATABASE INFO - TEMPORARY DEBUG
+// ===============================
+app.get("/api/db-info", async (req, res) => {
+    try {
+        const [rows] = await db.query(`
+            SELECT
+                DATABASE() AS database_name,
+                @@hostname AS mysql_hostname
+        `);
+
+        res.json({
+            success: true,
+            database: rows[0].database_name,
+            hostname: rows[0].mysql_hostname
+        });
+
+    } catch (error) {
+        console.error("DB Info Error:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Unable to get database information"
+        });
+    }
 });
 
 // ===============================
