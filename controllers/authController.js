@@ -119,20 +119,15 @@ const loginAdmin = async (req, res) => {
         const admin =
             await findAdminByEmail(email);
 
+        console.log("LOGIN EMAIL:", email);
+        console.log("ADMIN FOUND:", !!admin);
 
         if (!admin) {
-
             return res.status(401).json({
-
                 success: false,
-
-                message:
-                    "Invalid email or password"
-
+                message: "Invalid email or password"
             });
-
         }
-
 
         const isPasswordValid =
             await bcrypt.compare(
@@ -140,18 +135,13 @@ const loginAdmin = async (req, res) => {
                 admin.password
             );
 
+        console.log("PASSWORD VALID:", isPasswordValid);
 
         if (!isPasswordValid) {
-
             return res.status(401).json({
-
                 success: false,
-
-                message:
-                    "Invalid email or password"
-
+                message: "Invalid email or password"
             });
-
         }
 
 
