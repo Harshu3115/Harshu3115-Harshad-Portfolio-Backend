@@ -92,116 +92,37 @@ const registerAdmin = async (req, res) => {
 // LOGIN ADMIN
 // =================================
 
-const loginAdmin = async (req, res) => {
+const admin =
+    await findAdminByEmail(email);
 
-    try {
+console.log("LOGIN EMAIL:", email);
+console.log("ADMIN FOUND:", !!admin);
 
-        const {
-            email,
-            password
-        } = req.body;
+if (!admin) {
+    return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+    });
+}
 
+console.log("DB HASH LENGTH:", admin.password?.length);
+console.log("DB HASH START:", admin.password?.substring(0, 7));
+console.log("PASSWORD LENGTH:", password.length);
 
-        if (!email || !password) {
+const isPasswordValid =
+    await bcrypt.compare(
+        password,
+        admin.password
+    );
 
-            return res.status(400).json({
+console.log("PASSWORD VALID:", isPasswordValid);
 
-                success: false,
-
-                message:
-                    "Email and password are required"
-
-            });
-
-        }
-
-
-        const admin =
-            await findAdminByEmail(email);
-
-        console.log("LOGIN EMAIL:", email);
-        console.log("ADMIN FOUND:", !!admin);
-
-        if (!admin) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid email or password"
-            });
-        }
-
-        const isPasswordValid =
-            await bcrypt.compare(
-                password,
-                admin.password
-            );
-
-        console.log("PASSWORD LENGTH:", password.length);
-        console.log("PASSWORD VALID:", isPasswordValid);
-
-        if (!isPasswordValid) {
-            return res.status(401).json({
-                success: false,
-                message: "Invalid email or password"
-            });
-        } q
-
-
-        const token =
-            jwt.sign(
-
-                {
-                    id: admin.id,
-                    email: admin.email
-                },
-
-                process.env.JWT_SECRET,
-
-                {
-                    expiresIn:
-                        process.env.JWT_EXPIRES_IN
-                }
-
-            );
-
-
-        res.json({
-
-            success: true,
-
-            message:
-                "Login successful",
-
-            token,
-
-            admin: {
-
-                id: admin.id,
-                name: admin.name,
-                email: admin.email
-
-            }
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Login Error:",
-            error
-        );
-
-        res.status(500).json({
-
-            success: false,
-
-            message:
-                "Server error"
-
-        });
-
-    }
-
-};
+if (!isPasswordValid) {
+    return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+    });
+}
 
 
 // =================================
